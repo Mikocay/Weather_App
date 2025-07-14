@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/mainBGColor"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/app_logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:src="@mipmap/ic_main" />
+
+    <TextView
+        android:id="@+id/app_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_logo"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/koho_regular"
+        android:text="Weather App"
+        android:textColor="@color/textColor"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/welcome_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/app_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/koho_regular"
+        android:text="Chào mừng bạn đến với Weather App"
+        android:textColor="@color/textHintColor"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:id="@+id/login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/welcome_text"
+        android:layout_marginTop="40dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:boxBackgroundColor="@color/blockBGColor"
+            app:boxBackgroundMode="filled"
+            app:boxStrokeColor="@color/navBarColor"
+            app:hintTextColor="@color/textHintColor">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/email_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/koho_regular"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/textHintColor" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:boxBackgroundColor="@color/blockBGColor"
+            app:boxBackgroundMode="filled"
+            app:boxStrokeColor="@color/navBarColor"
+            app:hintTextColor="@color/textHintColor"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/textHintColor">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/password_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/koho_regular"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:textColor="@color/textColor"
+                android:textColorHint="@color/textHintColor" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/navBarColor"
+            android:fontFamily="@font/koho_regular"
+            android:text="Đăng nhập"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="8dp" />
+
+        <TextView
+            android:id="@+id/forgot_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/koho_regular"
+            android:text="Quên mật khẩu?"
+            android:textColor="@color/navBarColor"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/koho_regular"
+                android:text="Chưa có tài khoản? "
+                android:textColor="@color/textHintColor"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/signup_link"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/koho_regular"
+                android:text="Đăng ký"
+                android:textColor="@color/navBarColor"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/progress_bar"
+        style="@style/SpinKitView.FadingCircle"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        app:SpinKit_Color="@color/navBarColor" />
+
+</RelativeLayout>
