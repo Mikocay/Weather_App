@@ -12,13 +12,28 @@
         layout="@layout/main_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/day_rv"
+        android:layout_above="@id/news_button"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="160dp" />
+        android:layout_marginBottom="16dp" />
+
+    <!-- News Button - Thêm mới -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/news_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_above="@id/day_rv"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/navBarColor"
+        android:fontFamily="@font/koho_regular"
+        android:text="VIEW NEWS"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="8dp" />
 
     <com.github.ybq.android.spinkit.SpinKitView
         android:id="@+id/progress"
@@ -36,7 +51,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/news_button"
         android:layout_marginStart="0dp"
         android:layout_marginTop="85dp"
         android:layout_marginEnd="0dp"

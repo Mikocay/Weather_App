@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,6 +29,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.material.button.MaterialButton;
 import com.mikocay.weatherapp.adapter.DaysAdapter;
 import com.mikocay.weatherapp.databinding.ActivityHomeBinding;
 import com.mikocay.weatherapp.auth.LoginActivity;
@@ -69,10 +71,21 @@ public class HomeActivity extends AppCompatActivity {
     private final int REQUEST_CODE_EXTRA_INPUT = 101;
     private ActivityHomeBinding binding;
 
+    private void setupNewsButton() {
+        MaterialButton newsButton = findViewById(R.id.news_button);
+        newsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, NewsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_home);
         // binding
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
@@ -92,6 +105,8 @@ public class HomeActivity extends AppCompatActivity {
 
         // getting data using internet connection
         getDataUsingNetwork();
+        setupNewsButton();
+
 
         // Thiết lập nút logout
         binding.layout.logoutButton.setOnClickListener(v -> {
@@ -102,6 +117,7 @@ public class HomeActivity extends AppCompatActivity {
                     .setNegativeButton("Hủy", null)
                     .show();
         });
+
     }
 
     @Override
@@ -115,6 +131,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
+
 
 
     private void setNavigationBarColor() {
