@@ -93,9 +93,16 @@ public class HomeActivity extends AppCompatActivity {
         // getting data using internet connection
         getDataUsingNetwork();
 
+        // Thiết lập nút logout
+        binding.layout.logoutButton.setOnClickListener(v -> {
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Đăng xuất")
+                    .setMessage("Bạn muốn đăng xuất khỏi tài khoản?")
+                    .setPositiveButton("Đăng xuất", (dialog, which) -> logout())
+                    .setNegativeButton("Hủy", null)
+                    .show();
+        });
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -412,11 +419,4 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
-
-    // Thêm menu logout vào onCreate()
-    private void setupLogoutMenu() {
-        // Tạo menu logout button hoặc thêm vào existing menu
-        // Ví dụ: binding.logoutButton.setOnClickListener(v -> logout());
-    }
-
 }

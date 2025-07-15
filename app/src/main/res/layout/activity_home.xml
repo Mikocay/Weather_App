@@ -29,7 +29,6 @@
         android:visibility="visible"
         app:SpinKit_Color="@color/textColor" />
 
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/main_refresh_layout"
         android:layout_width="match_parent"

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Weather Forecast</string>
     <string name="mic_desc" translatable="false">mic for search</string>
+    <string name="logout_desc" translatable="false">Logout</string>
+
     <string name="day">day</string>
     <string name="pressure">PRESSURE</string>
     <string name="wind">WIND</string>
