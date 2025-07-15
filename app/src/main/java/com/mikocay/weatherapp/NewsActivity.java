@@ -16,8 +16,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mikocay.weatherapp.adapter.NewsAdapter;
 import com.mikocay.weatherapp.model.News;
 import com.mikocay.weatherapp.network.NewsService;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class NewsActivity extends AppCompatActivity {
     private static final String TAG = "NewsActivity";
@@ -129,6 +133,10 @@ public class NewsActivity extends AppCompatActivity {
                 isLoading = false;
                 progressBar.setVisibility(View.GONE);
                 newsList.clear();
+
+                // Sắp xếp tin tức theo ngày mới nhất đến cũ nhất
+                sortNewsByDate(newsResponse);
+
                 newsList.addAll(newsResponse);
                 newsAdapter.notifyDataSetChanged();
             }
@@ -157,6 +165,10 @@ public class NewsActivity extends AppCompatActivity {
                 isLoading = false;
                 progressBar.setVisibility(View.GONE);
                 newsList.clear();
+
+                // Sắp xếp tin tức theo ngày mới nhất đến cũ nhất
+                sortNewsByDate(newsResponse);
+
                 newsList.addAll(newsResponse);
                 newsAdapter.notifyDataSetChanged();
             }
@@ -167,6 +179,35 @@ public class NewsActivity extends AppCompatActivity {
                 isLoading = false;
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(NewsActivity.this, "Error loading news: " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * Sắp xếp danh sách tin tức theo ngày mới nhất đến cũ nhất
+     */
+    private void sortNewsByDate(List<News> newsResponse) {
+        Collections.sort(newsResponse, (news1, news2) -> {
+            try {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
+
+                Date date1 = dateFormat.parse(news1.getPublishedAt());
+                Date date2 = dateFormat.parse(news2.getPublishedAt());
+
+                // Sắp xếp giảm dần (mới nhất trước)
+                return date2.compareTo(date1);
+
+            } catch (Exception e) {
+                Log.e(TAG, "Error parsing date for sorting: " + e.getMessage());
+                // Nếu không parse được date, tin tức nào có lỗi sẽ được đặt cuối
+                if (news1.getPublishedAt() == null || news1.getPublishedAt().isEmpty()) {
+                    return 1;
+                }
+                if (news2.getPublishedAt() == null || news2.getPublishedAt().isEmpty()) {
+                    return -1;
+                }
+                // Nếu cả hai đều có lỗi, so sánh theo string
+                return news2.getPublishedAt().compareTo(news1.getPublishedAt());
             }
         });
     }
