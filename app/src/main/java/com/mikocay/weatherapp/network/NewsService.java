@@ -11,12 +11,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NewsService {
     private static final String TAG = "NewsService";
-    private static final String API_KEY = "8c339bb9125140c5bbad1ceea07ab8e4"; // Thay bằng API key từ newsapi.org
+    private static final String API_KEY = "8c339bb9125140c5bbad1ceea07ab8e4";
     private static final String BASE_URL = "https://newsapi.org/v2/everything";
 
     public interface NewsCallback {
@@ -24,19 +25,35 @@ public class NewsService {
         void onError(String error);
     }
 
-    // Method mới để tìm kiếm tin tức về Vietnam bằng tiếng Việt
     public static void getVietnamNews(NewsCallback callback) {
         new GetNewsTask("Vietnam", "vi", callback).execute();
     }
 
-    // Method tổng quát để tìm kiếm tin tức
     public static void getNewsByQuery(String query, String language, NewsCallback callback) {
         new GetNewsTask(query, language, callback).execute();
     }
 
-    // Giữ lại method cũ để tương thích ngược (nếu cần)
     public static void getNewsByCountry(String country, NewsCallback callback) {
-        new GetNewsTask(country, null, callback).execute();
+        String query = convertCountryToQuery(country);
+        new GetNewsTask(query, null, callback).execute();
+    }
+
+    private static String convertCountryToQuery(String country) {
+        switch (country.toLowerCase()) {
+            case "vn":
+            case "vietnam":
+                return "Vietnam";
+            case "us":
+                return "United States";
+            case "gb":
+                return "United Kingdom";
+            case "jp":
+                return "Japan";
+            case "kr":
+                return "South Korea";
+            default:
+                return country;
+        }
     }
 
     private static class GetNewsTask extends AsyncTask<Void, Void, String> {
@@ -53,64 +70,116 @@ public class NewsService {
 
         @Override
         protected String doInBackground(Void... voids) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
             try {
+                Log.d(TAG, "Starting API request for query: " + query);
+
+                // Tạo URL với proper encoding
                 StringBuilder urlBuilder = new StringBuilder();
                 urlBuilder.append(BASE_URL)
-                        .append("?q=").append(query)
-                        .append("&apiKey=").append(API_KEY)
-                        .append("&pageSize=20");
+                        .append("?q=").append(URLEncoder.encode(query, "UTF-8"));
 
-                // Thêm language parameter nếu có
                 if (language != null && !language.isEmpty()) {
                     urlBuilder.append("&language=").append(language);
                 }
+
+                urlBuilder.append("&apiKey=").append(API_KEY);
 
                 String urlString = urlBuilder.toString();
                 Log.d(TAG, "Requesting URL: " + urlString);
 
                 URL url = new URL(urlString);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Cấu hình connection
                 connection.setRequestMethod("GET");
-                connection.setConnectTimeout(10000);
-                connection.setReadTimeout(10000);
+                connection.setRequestProperty("User-Agent", "WeatherApp/1.0");
+                connection.setRequestProperty("Accept", "application/json");
+                connection.setConnectTimeout(30000); // Tăng timeout lên 30s
+                connection.setReadTimeout(30000);
+                connection.setDoInput(true);
+
+                Log.d(TAG, "Connecting to API...");
+                connection.connect();
 
                 int responseCode = connection.getResponseCode();
-                if (responseCode != HttpURLConnection.HTTP_OK) {
-                    errorMessage = "HTTP Error: " + responseCode;
+                Log.d(TAG, "Response Code: " + responseCode);
+                Log.d(TAG, "Response Message: " + connection.getResponseMessage());
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    Log.d(TAG, "Successfully connected, reading response...");
+
+                    reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    Log.d(TAG, "Response length: " + response.length());
+                    Log.d(TAG, "Response preview: " + response.toString().substring(0,
+                            Math.min(200, response.toString().length())));
+
+                    return response.toString();
+
+                } else {
+                    // Đọc error response
+                    Log.e(TAG, "HTTP Error: " + responseCode);
+                    BufferedReader errorReader = new BufferedReader(
+                            new InputStreamReader(connection.getErrorStream()));
+                    StringBuilder errorResponse = new StringBuilder();
+                    String errorLine;
+                    while ((errorLine = errorReader.readLine()) != null) {
+                        errorResponse.append(errorLine);
+                    }
+                    errorReader.close();
+
+                    Log.e(TAG, "Error response: " + errorResponse.toString());
+                    errorMessage = "HTTP Error: " + responseCode + " - " + errorResponse.toString();
                     return null;
                 }
 
-                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuilder response = new StringBuilder();
-                String line;
-
-                while ((line = reader.readLine()) != null) {
-                    response.append(line);
-                }
-
-                reader.close();
-                connection.disconnect();
-                return response.toString();
-
-            } catch (IOException e) {
-                Log.e(TAG, "Network error", e);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception occurred: " + e.getClass().getSimpleName(), e);
+                Log.e(TAG, "Exception message: " + e.getMessage());
                 errorMessage = "Network error: " + e.getMessage();
                 return null;
+            } finally {
+                // Cleanup
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Error closing reader", e);
+                    }
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                Log.d(TAG, "Connection cleanup completed");
             }
         }
 
         @Override
         protected void onPostExecute(String result) {
+            Log.d(TAG, "onPostExecute called with result: " + (result != null ? "not null" : "null"));
+
             if (result != null) {
                 try {
                     List<News> newsList = parseNewsResponse(result);
+                    Log.d(TAG, "Parsed " + newsList.size() + " news items");
                     callback.onSuccess(newsList);
                 } catch (JSONException e) {
                     Log.e(TAG, "JSON parsing error", e);
                     callback.onError("Parsing error: " + e.getMessage());
                 }
             } else {
-                callback.onError(errorMessage != null ? errorMessage : "Unknown error");
+                String error = errorMessage != null ? errorMessage : "Unknown error";
+                Log.e(TAG, "Calling onError with: " + error);
+                callback.onError(error);
             }
         }
 
@@ -122,7 +191,12 @@ public class NewsService {
                 throw new JSONException("API Error: " + jsonResponse.optString("message"));
             }
 
+            if (!jsonResponse.has("articles")) {
+                throw new JSONException("No articles found in response");
+            }
+
             JSONArray articles = jsonResponse.getJSONArray("articles");
+            Log.d(TAG, "Found " + articles.length() + " articles");
 
             for (int i = 0; i < articles.length(); i++) {
                 JSONObject article = articles.getJSONObject(i);
