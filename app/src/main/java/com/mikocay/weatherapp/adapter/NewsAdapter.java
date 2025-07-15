@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.mikocay.weatherapp.R;
@@ -57,8 +56,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                     .into(holder.imageView);
         }
 
-        // Set click listener to open article
-        holder.cardView.setOnClickListener(v -> {
+        // Set click listener to open article - sử dụng itemView thay vì cardView
+        holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(news.getUrl()));
             context.startActivity(intent);
         });
@@ -86,7 +85,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public static class NewsViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
         ImageView imageView;
         TextView titleTextView;
         TextView descriptionTextView;
@@ -95,7 +93,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         public NewsViewHolder(@NonNull View itemView) {
             super(itemView);
-//            cardView = itemView.findViewById(R.id.news_card);
             imageView = itemView.findViewById(R.id.news_image);
             titleTextView = itemView.findViewById(R.id.news_title);
             descriptionTextView = itemView.findViewById(R.id.news_description);

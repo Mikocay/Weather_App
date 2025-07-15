@@ -1,5 +1,6 @@
 package com.mikocay.weatherapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mikocay.weatherapp.adapter.NewsAdapter;
 import com.mikocay.weatherapp.model.News;
 import com.mikocay.weatherapp.network.NewsService;
@@ -25,6 +27,7 @@ public class NewsActivity extends AppCompatActivity {
     private Spinner countrySpinner;
     private List<News> newsList = new ArrayList<>();
     private boolean isLoading = false;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class NewsActivity extends AppCompatActivity {
         initViews();
         setupRecyclerView();
         setupCountrySpinner();
+        setupBottomNavigation();
         setupBackButton();
 
         // Delay initial load để đảm bảo UI đã setup xong
@@ -44,6 +48,7 @@ public class NewsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.news_recycler_view);
         progressBar = findViewById(R.id.news_progress_bar);
         countrySpinner = findViewById(R.id.country_spinner);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
 
     private void setupRecyclerView() {
@@ -79,6 +84,35 @@ public class NewsActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
+    }
+
+    private void setupBottomNavigation() {
+        bottomNavigationView.setSelectedItemId(R.id.nav_news);
+
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_weather) {
+                Intent intent = new Intent(NewsActivity.this, HomeActivity.class);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                finish();
+                return true;
+            } else if (item.getItemId() == R.id.nav_news) {
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private void setupBackButton() {
+        // Nếu có back button trong layout
+        ImageView backButton = findViewById(R.id.back_button);
+        if (backButton != null) {
+            backButton.setOnClickListener(v -> {
+                Intent intent = new Intent(NewsActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
+            });
+        }
     }
 
     private void loadVietnamNews() {
@@ -137,15 +171,18 @@ public class NewsActivity extends AppCompatActivity {
         });
     }
 
-    private void setupBackButton() {
-        ImageView backButton = findViewById(R.id.back_button);
-        if (backButton != null) {
-            backButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_news);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(NewsActivity.this, HomeActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

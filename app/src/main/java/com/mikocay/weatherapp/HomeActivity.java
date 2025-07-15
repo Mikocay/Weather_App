@@ -30,6 +30,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mikocay.weatherapp.adapter.DaysAdapter;
 import com.mikocay.weatherapp.databinding.ActivityHomeBinding;
 import com.mikocay.weatherapp.auth.LoginActivity;
@@ -59,33 +60,22 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
-
 public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    private final int WEATHER_FORECAST_APP_UPDATE_REQ_CODE = 101;   // for app update
-    private static final int PERMISSION_CODE = 1;                   // for user location permission
+    private final int WEATHER_FORECAST_APP_UPDATE_REQ_CODE = 101;
+    private static final int PERMISSION_CODE = 1;
     private String name, updated_at, description, temperature, min_temperature, max_temperature, pressure, wind_speed, humidity;
     private int condition;
     private long update_time, sunset, sunrise;
     private String city = "";
     private final int REQUEST_CODE_EXTRA_INPUT = 101;
     private ActivityHomeBinding binding;
-
-    private void setupNewsButton() {
-        MaterialButton newsButton = findViewById(R.id.news_button);
-        newsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(HomeActivity.this, NewsActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+
         // binding
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
@@ -105,8 +95,10 @@ public class HomeActivity extends AppCompatActivity {
 
         // getting data using internet connection
         getDataUsingNetwork();
-        setupNewsButton();
 
+        // setup buttons and navigation
+        setupNewsButton();
+        setupBottomNavigation();
 
         // Thiết lập nút logout
         binding.layout.logoutButton.setOnClickListener(v -> {
@@ -117,7 +109,48 @@ public class HomeActivity extends AppCompatActivity {
                     .setNegativeButton("Hủy", null)
                     .show();
         });
+    }
 
+    private void setupNewsButton() {
+        MaterialButton newsButton = findViewById(R.id.news_button);
+        if (newsButton != null) {
+            newsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(HomeActivity.this, NewsActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(0, 0);
+                }
+            });
+        }
+    }
+
+    private void setupBottomNavigation() {
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_weather);
+
+            bottomNavigationView.setOnItemSelectedListener(item -> {
+                if (item.getItemId() == R.id.nav_weather) {
+                    return true;
+                } else if (item.getItemId() == R.id.nav_news) {
+                    Intent intent = new Intent(HomeActivity.this, NewsActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(0, 0);
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkConnection();
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setSelectedItemId(R.id.nav_weather);
+        }
     }
 
     @Override
@@ -131,8 +164,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
     }
-
-
 
     private void setNavigationBarColor() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -175,7 +206,7 @@ public class HomeActivity extends AppCompatActivity {
         binding.mainRefreshLayout.setOnRefreshListener(() -> {
             checkConnection();
             Log.i("refresh", "Refresh Done.");
-            binding.mainRefreshLayout.setRefreshing(false);  //for the next time
+            binding.mainRefreshLayout.setRefreshing(false);
         });
         //Mic Search
         binding.layout.micSearchId.setOnClickListener(view -> {
@@ -184,7 +215,6 @@ public class HomeActivity extends AppCompatActivity {
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, Locale.getDefault());
             intent.putExtra(RecognizerIntent.EXTRA_PROMPT, REQUEST_CODE_EXTRA_INPUT);
             try {
-                //it was deprecated but still work
                 startActivityForResult(intent, REQUEST_CODE_EXTRA_INPUT);
             } catch (Exception e) {
                 Log.d("Error Voice", "Mic Error:  " + e);
@@ -232,7 +262,6 @@ public class HomeActivity extends AppCompatActivity {
                 LocationCord.lat = response.getJSONObject("coord").getString("lat");
                 LocationCord.lon = response.getJSONObject("coord").getString("lon");
                 getTodayWeatherInfo(cityName);
-                // After the successfully city search the cityEt(editText) is Empty.
                 binding.layout.cityEt.setText("");
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -256,7 +285,7 @@ public class HomeActivity extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("EEEE HH:mm", Locale.ENGLISH);
                 sdf.setTimeZone(TimeZone.getTimeZone(cityTimezone));
 
-                Date currentTime = new Date(); // Current system time
+                Date currentTime = new Date();
                 updated_at = sdf.format(currentTime);
 
                 // Lấy thông tin thời tiết
@@ -272,7 +301,6 @@ public class HomeActivity extends AppCompatActivity {
                 wind_speed = String.format("%.1f", response.getJSONObject("wind").getDouble("speed"));
                 humidity = String.valueOf(response.getJSONObject("main").getInt("humidity"));
 
-                // Debug log
                 Log.d("TIME_DEBUG", "City: " + name);
                 Log.d("TIME_DEBUG", "Timezone: " + cityTimezone);
                 Log.d("TIME_DEBUG", "Current time: " + updated_at);
@@ -294,7 +322,6 @@ public class HomeActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    // Helper method để lấy timezone chính xác
     private String getCityTimezone(String cityName) {
         Map<String, String> cityTimezones = new HashMap<>();
 
@@ -320,21 +347,16 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
-        // Default fallback
         return "GMT";
     }
-
-
 
     @SuppressLint("SetTextI18n")
     private void updateUI() {
         binding.layout.nameTv.setText(name);
 
-        // Translate và hiển thị thời gian update
         String translatedTime = translate(updated_at);
         binding.layout.updatedAtTv.setText(translatedTime);
 
-        // Weather icon
         binding.layout.conditionIv.setImageResource(
                 getResources().getIdentifier(
                         UpdateUI.getIconID(condition, System.currentTimeMillis() / 1000, sunrise, sunset),
@@ -342,7 +364,6 @@ public class HomeActivity extends AppCompatActivity {
                         getPackageName()
                 ));
 
-        // Weather info
         binding.layout.conditionDescTv.setText(description);
         binding.layout.tempTv.setText(temperature + "°C");
         binding.layout.minTempTv.setText(min_temperature + "°C");
@@ -356,16 +377,14 @@ public class HomeActivity extends AppCompatActivity {
         try {
             String[] dayToTranslateSplit = dayToTranslate.split(" ");
             if (dayToTranslateSplit.length >= 2) {
-                // Translate ngày
                 dayToTranslateSplit[0] = UpdateUI.TranslateDay(dayToTranslateSplit[0].trim(), getApplicationContext());
                 return dayToTranslateSplit[0] + " " + dayToTranslateSplit[1];
             } else {
-                // Fallback nếu format không đúng
                 return dayToTranslate;
             }
         } catch (Exception e) {
             Log.e("TRANSLATE_ERROR", "Error translating time: " + e.getMessage());
-            return dayToTranslate; // Return original if translation fails
+            return dayToTranslate;
         }
     }
 
@@ -406,12 +425,6 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
             }
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkConnection();
     }
 
     private void checkUpdate() {
