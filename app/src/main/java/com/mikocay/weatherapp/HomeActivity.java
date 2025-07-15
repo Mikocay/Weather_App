@@ -96,8 +96,7 @@ public class HomeActivity extends AppCompatActivity {
         // getting data using internet connection
         getDataUsingNetwork();
 
-        // setup buttons and navigation
-        setupNewsButton();
+        // setup bottom navigation only (removed setupNewsButton)
         setupBottomNavigation();
 
         // Thiết lập nút logout
@@ -111,19 +110,7 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void setupNewsButton() {
-        MaterialButton newsButton = findViewById(R.id.news_button);
-        if (newsButton != null) {
-            newsButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(HomeActivity.this, NewsActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(0, 0);
-                }
-            });
-        }
-    }
+    // Removed setupNewsButton() method completely as news_button no longer exists
 
     private void setupBottomNavigation() {
         bottomNavigationView = findViewById(R.id.bottom_navigation);

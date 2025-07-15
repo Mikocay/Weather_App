@@ -1,110 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/mainBGColor"
     tools:context=".HomeActivity">
 
-    <!-- Main Content Container -->
-    <RelativeLayout
+    <!-- Main Layout Include - Chiếm ít không gian hơn -->
+    <include
+        android:id="@+id/layout"
+        layout="@layout/main_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="12dp" />
 
-        <!-- Main Layout Include -->
-        <include
-            android:id="@+id/layout"
-            layout="@layout/main_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@id/bottom_content_section"
-            android:layout_marginTop="12dp" />
-
-        <!-- Bottom Content Section -->
-        <LinearLayout
-            android:id="@+id/bottom_content_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/news_button"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical">
-
-            <!-- Day RecyclerView -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/day_rv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginStart="-1dp"
-                android:layout_marginEnd="3dp"
-                android:layout_marginBottom="8dp" />
-
-        </LinearLayout>
-
-        <!-- News Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/news_button"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_above="@id/bottom_navigation"
-            android:layout_marginHorizontal="32dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@color/navBarColor"
-            android:fontFamily="@font/koho_regular"
-            android:text="VIEW NEWS"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:cornerRadius="8dp" />
-
-        <!-- Progress Loading -->
-        <com.github.ybq.android.spinkit.SpinKitView
-            android:id="@+id/progress"
-            style="@style/SpinKitView.FadingCircle"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_centerInParent="true"
-            android:visibility="visible"
-            app:SpinKit_Color="@color/textColor" />
-
-        <!-- Swipe Refresh Layout -->
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/main_refresh_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottom_content_section"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="-5dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="6dp"
-            android:layout_marginBottom="30dp">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    </RelativeLayout>
+    <!-- Day RecyclerView - Đặt ngay dưới main layout -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/day_rv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:background="@color/blockBGColor"
         android:elevation="8dp"
         app:itemIconTint="@color/textColor"
         app:itemTextColor="@color/textColor"
         app:menu="@menu/menu_bottom_navigation" />
 
-</LinearLayout>
+    <!-- Progress Loading -->
+    <com.github.ybq.android.spinkit.SpinKitView
+        android:id="@+id/progress"
+        style="@style/SpinKitView.FadingCircle"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        app:SpinKit_Color="@color/textColor" />
+
+    <!-- Swipe Refresh Layout - CHỈ THAY ĐỔI DÒNG NÀY -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/main_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/day_rv"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="85dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="0dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</RelativeLayout>

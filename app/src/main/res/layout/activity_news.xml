@@ -6,21 +6,87 @@
     android:orientation="vertical"
     android:background="@color/mainBGColor">
 
+    <!-- News Header Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/mainBGColor"
+        android:padding="16dp">
+
+        <!-- News Title Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/center_block_bg"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/news_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LATEST NEWS"
+                android:textColor="@color/textColor"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/news_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Stay updated with current events"
+                android:textColor="@color/textColor"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:alpha="0.8" />
+
+        </LinearLayout>
+
+        <!-- Country Selection Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <!-- Country Selection Label -->
+            <TextView
+                android:id="@+id/country_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Select country:"
+                android:textColor="@color/textColor"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginEnd="12dp" />
+
+            <!-- Country Spinner -->
+            <Spinner
+                android:id="@+id/country_spinner"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/day_block_bg"
+                android:padding="8dp" />
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
+
     <!-- News Content Container -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <!-- Country Spinner -->
-        <Spinner
-            android:id="@+id/country_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_margin="16dp"
-            android:background="@drawable/day_block_bg"
-            android:padding="12dp" />
+        android:layout_weight="1"
+        android:background="@color/mainBGColor">
 
         <!-- Progress Bar -->
         <ProgressBar
@@ -35,8 +101,9 @@
             android:id="@+id/news_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/country_spinner"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp" />
 
     </RelativeLayout>
 
